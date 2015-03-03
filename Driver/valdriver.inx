@@ -1,0 +1,104 @@
+;/*++
+;
+;Copyright (c) 2013 Donald D. Burn
+;
+;Module Name:
+;
+;    ValDriver.INF
+;
+;Abstract:
+;    INF file for installing DipSwitch driver
+;
+;
+;--*/
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%COMPANY%
+DriverVer=2/28/2015,1.00
+CatalogFile=ValDriver.cat
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskId1%,,,""
+
+[SourceDisksFiles]
+ValDriver.sys  = 1,,
+
+[Manufacturer]
+%COMPANY%=Standard,NT$ARCH$
+
+; For Win2K because it cannot parse decorated sections.
+[Standard]
+;
+%ValDriver.DeviceDesc%=ValDriver_Device, root\ValDriver
+
+; For XP and later
+[Standard.NT$ARCH$]
+%ValDriver.DeviceDesc%=ValDriver_Device, root\ValDriver
+
+[ValDriver_Device.NT]
+CopyFiles=Drivers_Dir
+
+
+[Drivers_Dir]
+ValDriver.sys
+
+
+;-------------- Service installation
+[ValDriver_Device.NT.Services]
+AddService = ValDriver,%SPSVCINST_ASSOCSERVICE%, ValDriver_Service_Inst, ValDriver_Elog_Inst
+
+; -------------- driver install sections
+[ValDriver_Service_Inst]
+DisplayName    = %ValDriver.SVCDESC%
+ServiceType    = 1
+StartType      = 1               ; SERVICE_SYSTEM_START
+ErrorControl   = 1
+ServiceBinary  = %12%\ValDriver.sys
+LoadOrderGroup = Extended Base
+
+
+[ValDriver_Elog_Inst]
+AddReg=ValDriver_Elog_AddReg
+
+[ValDriver_Elog_AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\Drivers\ValDriver.sys"
+HKR,,TypesSupported,0x00010001,7
+
+;
+;--- ValDriver_Device WDF Coinstaller installation ------
+;
+[DestinationDirs]
+ValDriver_Device_CoInstaller_CopyFiles = 11
+
+[ValDriver_Device.NT.CoInstallers]
+AddReg=ValDriver_Device_CoInstaller_AddReg
+CopyFiles=ValDriver_Device_CoInstaller_CopyFiles
+
+[ValDriver_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[ValDriver_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[SourceDisksFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+[ValDriver_Device.NT.Wdf]
+KmdfService = ValDriver, ValDriver_wdfsect
+[ValDriver_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+COMPANY = "Crown Gaming Systems"
+DiskId1 = "Install Disk #1"
+ValDriver.DeviceDesc  = "Intrusion Detection"
+ValDriver.SVCDESC = "Intrusion Detection Driver"
+

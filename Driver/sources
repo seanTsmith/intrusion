@@ -1,0 +1,21 @@
+TARGETNAME=valdriver
+TARGETTYPE=DRIVER
+
+MSC_WARNING_LEVEL=/W4 /WX
+
+KMDF_VERSION_MAJOR=1
+
+TARGETLIBS=$(TARGETLIBS) \
+           $(DDK_LIB_PATH)\wdmsec.lib \
+           $(DDK_LIB_PATH)\ntstrsafe.lib
+
+INF_NAME=valdriver
+NTTARGETFILE0=$(OBJ_PATH)\$(O)\$(INF_NAME).inf
+
+INCLUDES= .;..\include
+
+SOURCES=driver.c
+
+NTTARGETFILE2=COPYTARGET
+
+

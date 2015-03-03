@@ -1,0 +1,8 @@
+
+#define PACKAGE_REV			"1.0.0.0"
+
+#define PACKAGE_REV_MAJOR		1
+#define PACKAGE_REV_MINOR		0
+#define PACKAGE_REV_BUILD		0
+#define PACKAGE_REV_SP			0
+

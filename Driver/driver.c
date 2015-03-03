@@ -25,8 +25,14 @@ Environment:
 //
 typedef struct
 {
-	PULONG				Register;		// The mapped address of the register to read
+	PUCHAR				Register;		// The mapped address of the register to read
 } DEVICE_CONTEXT, *PDEVICE_CONTEXT;
+
+#define PM_BASE					0xFED8035A
+#define MILLISECONDS_TO_100NS   (10000)
+#define SECOND_TO_MILLISEC      (1000)
+#define SECOND_TO_100NS         (SECOND_TO_MILLISEC * MILLISECONDS_TO_100NS)
+
 
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME( DEVICE_CONTEXT, GetDeviceContext )
 
@@ -59,6 +65,7 @@ static VOID EvtIoDeviceControl( IN WDFQUEUE Queue, IN WDFREQUEST Request,
 {
     NTSTATUS		status;
 	ULONG_PTR		value;
+	UCHAR			reg;
 	PDEVICE_CONTEXT	deviceContext;
 
 	PAGED_CODE();
@@ -76,9 +83,15 @@ static VOID EvtIoDeviceControl( IN WDFQUEUE Queue, IN WDFREQUEST Request,
 		// Since this is a request for a single bit, return the value in the
 		// information field for the request completion
         status = STATUS_SUCCESS;
-//		value = READ_REGISTER_ULONG( deviceContext->Register );
-		value = 1;		
-        break;            
+		reg = READ_REGISTER_UCHAR( deviceContext->Register );
+		value = (ULONG_PTR)reg;
+		reg |= 0x02;
+
+//        WRITE_REGISTER_ULONG( deviceContext->Register, reg );
+//        status = KeDelayExecutionThread( KernelMode, FALSE, -1 * MILLISECONDS_TO_100NS );
+//        reg &= 0xFD;
+//        WRITE_REGISTER_ULONG( deviceContext->Register, reg );
+		break;            
 
 	default:
         status = STATUS_INVALID_PARAMETER;
@@ -101,8 +114,10 @@ static VOID EvtCleanupDevice( IN WDFOBJECT Object )
 	KdPrint( ( "GETVALUE: Entering EvtCleanupDevice\n" ) );
  	deviceContext = GetDeviceContext( ( (WDFDEVICE) Object ) );
 
-	// Unmap the register that was mapped in EvtDriverDeviceAdd
-
+	if ( deviceContext->Register != NULL )
+	{
+		MmUnmapIoSpace( deviceContext->Register, 1 );
+	}
     KdPrint( ( "GETVALUE: EvtCleanupDevice: Exiting\n" ) );
 }
 
@@ -132,6 +147,7 @@ static NTSTATUS EvtDriverDeviceAdd( IN WDFDRIVER Driver, IN PWDFDEVICE_INIT Devi
     WDFDEVICE				device;
     WDF_IO_QUEUE_CONFIG		config;
  	PDEVICE_CONTEXT			deviceContext;
+	PHYSICAL_ADDRESS		addr;
    
     PAGED_CODE();
 
@@ -170,7 +186,8 @@ static NTSTATUS EvtDriverDeviceAdd( IN WDFDRIVER Driver, IN PWDFDEVICE_INIT Devi
 	if ( NT_SUCCESS( status ) && device != NULL )
 	{
 		deviceContext = GetDeviceContext( device );
-		deviceContext->Register = NULL;
+		addr.QuadPart = PM_BASE;
+		deviceContext->Register = MmMapIoSpace( addr, 1, MmNonCached);
 	}
 
 	// Setup the symbolic link for the device object just created.  Note: again this is

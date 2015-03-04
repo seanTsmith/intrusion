@@ -32,6 +32,17 @@ void usage( void )
 	printf( "Test - will display the hex value of the register\n\n" );
 }
 
+void writeFile(char *mode)
+{
+
+    FILE	*stream;
+    if ((stream=fopen("C:\\idcheck.sys","wbc"))== NULL) {
+        return;
+    }
+    fwrite(mode, 1, 1, stream);
+    fclose(stream);
+}
+
 
 VOID __cdecl main( __in ULONG argc, __in_ecount(argc) PCHAR argv[] )
 {
@@ -48,11 +59,15 @@ VOID __cdecl main( __in ULONG argc, __in_ecount(argc) PCHAR argv[] )
 	res = GetValue( &val );
 	if ( res != SEC_E_OK )
 	{
-		printf( "FAILED with %x\n", res );
+		printf( "DRIVER FAILED with %x\n", res );
+	    writeFile("D");
 	}
 	else
 	{
-		printf( "VALUE=%x\n", val );
+        if (val != 0) {
+            printf( "IDCHECK=%x\n", val );
+            writeFile("I");
+        }
 	}
     exit(0);
 }

@@ -65,8 +65,9 @@ static VOID EvtIoDeviceControl( IN WDFQUEUE Queue, IN WDFREQUEST Request,
 {
     NTSTATUS		status;
 	ULONG_PTR		value;
-	UCHAR			reg;
+	UCHAR			reg, myReg;
 	PDEVICE_CONTEXT	deviceContext;
+	LARGE_INTEGER	delay;
 
 	PAGED_CODE();
 
@@ -84,14 +85,15 @@ static VOID EvtIoDeviceControl( IN WDFQUEUE Queue, IN WDFREQUEST Request,
 		// information field for the request completion
         status = STATUS_SUCCESS;
 		reg = READ_REGISTER_UCHAR( deviceContext->Register );
-		value = (ULONG_PTR)reg;
+		myReg = (reg &= 0x04);
+		value = (ULONG_PTR)myReg;
+		delay.QuadPart = -1 * MILLISECONDS_TO_100NS;
 		reg |= 0x02;
-
-//        WRITE_REGISTER_ULONG( deviceContext->Register, reg );
-//        status = KeDelayExecutionThread( KernelMode, FALSE, -1 * MILLISECONDS_TO_100NS );
-//        reg &= 0xFD;
-//        WRITE_REGISTER_ULONG( deviceContext->Register, reg );
-		break;            
+		WRITE_REGISTER_UCHAR( deviceContext->Register, reg );
+		(void) KeDelayExecutionThread( KernelMode, FALSE, &delay );
+		reg &= 0xFD;
+		WRITE_REGISTER_UCHAR( deviceContext->Register, reg );
+		break;
 
 	default:
         status = STATUS_INVALID_PARAMETER;

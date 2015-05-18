@@ -1,0 +1,28 @@
+BUILD: Computing Include file dependencies:
+BUILD: Examining z:\repos\seantsmith\intrusion directory tree for files to compile.
+oacr invalidate root:x86fre /autocleanqueue
+1>Building generated files in z:\repos\seantsmith\intrusion\driver *************
+1>'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS0 /nologo /f c:\winddk\7600.16385.1\bin\makefile.def NOLINK=1 PASS0ONLY=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+1>BUILDMSG: Processing z:\repos\seantsmith\intrusion\driver
+BUILD: Examining z:\repos\seantsmith\intrusion directory tree for files to compile. (2nd Pass)
+1>Compiling and Linking z:\repos\seantsmith\intrusion\driver *************
+1>'nmake.exe /nologo BUILDMSG=Stop. -i /nologo /f c:\winddk\7600.16385.1\bin\makefile.def BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+1>BUILDMSG: Processing z:\repos\seantsmith\intrusion\driver
+2>Linking for z:\repos\seantsmith\intrusion\userapi *************
+2>'nmake.exe /nologo BUILDMSG=Stop. -i /nologo /f c:\winddk\7600.16385.1\bin\makefile.def BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDLL=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+2>BUILDMSG: Processing z:\repos\seantsmith\intrusion\userapi
+3>Compiling and Linking z:\repos\seantsmith\intrusion\test *************
+3>'nmake.exe /nologo BUILDMSG=Stop. -i /nologo /f c:\winddk\7600.16385.1\bin\makefile.def BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+3>BUILDMSG: Processing z:\repos\seantsmith\intrusion\test
+1> if not exist ..\InstallImage (md ..\InstallImage )
+2> if not exist ..\InstallImage\i386 (md ..\InstallImage\i386 )
+3> if not exist ..\InstallImage\i386 (md ..\InstallImage\i386 )
+1> if not exist ..\InstallImage\i386 (md ..\InstallImage\i386 )
+2> if exist z:\repos\seantsmith\intrusion\userapi\objfre_win7_x86\i386\UserApi.dll copy z:\repos\seantsmith\intrusion\userapi\objfre_win7_x86\i386\UserApi.dll ..\InstallImage\i386
+3> if exist z:\repos\seantsmith\intrusion\test\objfre_win7_x86\i386\Test.exe copy z:\repos\seantsmith\intrusion\test\objfre_win7_x86\i386\Test.exe ..\InstallImage\i386
+1> if exist z:\repos\seantsmith\intrusion\driver\objfre_win7_x86\i386\valdriver.sys copy z:\repos\seantsmith\intrusion\driver\objfre_win7_x86\i386\valdriver.sys ..\InstallImage\i386
+2> 1 file(s) copied.
+3> 1 file(s) copied.
+1> 1 file(s) copied.
+1> if exist z:\repos\seantsmith\intrusion\driver\objfre_win7_x86\i386\valdriver.inf copy z:\repos\seantsmith\intrusion\driver\objfre_win7_x86\i386\valdriver.inf ..\InstallImage\i386
+1> 1 file(s) copied.
